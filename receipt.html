@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>🧾 Receipt</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background-color: #f9f9f9;
+        }
+
+        h2 {
+            color: #333;
+        }
+
+        .download-btn {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="products.html">Products</a>
+        <a href="cart.html">Cart</a>
+    </nav>
+    <div id="flash-msg"></div>
+
+    <h2>🧾 Order Receipt</h2>
+    <p><strong>Name:</strong> <span id="r-name"></span></p>
+    <p><strong>Email:</strong> <span id="r-email"></span></p>
+    <hr />
+    <table class="receipt-table" id="receipt-table">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Price (৳)</th>
+                <th>Quantity</th>
+                <th>Subtotal (৳)</th>
+                <th>Order Time</th>
+            </tr>
+        </thead>
+        <tbody id="receipt-body">
+            <tr>
+                <td colspan="5">Loading...</td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="download-btn">
+        <button onclick="downloadPDF()">⬇️ Download PDF Receipt</button>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        injectHeader();
+        if (!isLoggedIn()) window.location.href = 'login.html';
+
+        async function loadReceipt() {
+            try {
+                const res = await authFetch(`${API_BASE}/orders/receipt`);
+                const data = await res.json();
+                document.getElementById('r-name').textContent = data.orders[0]?.fullname || data.user.name;
+                document.getElementById('r-email').textContent = data.user.email;
+
+                let total = 0;
+                const tbody = document.getElementById('receipt-body');
+                if (!data.orders.length) {
+                    tbody.innerHTML = '<tr><td colspan="5">No orders found.</td></tr>';
+                    return;
+                }
+                tbody.innerHTML = data.orders.map(o => {
+                    const p = o.product_id;
+                    const subtotal = p.price * o.quantity;
+                    total += subtotal;
+                    return `<tr>
+                        <td>${p.name}</td>
+                        <td>৳${p.price.toFixed(2)}</td>
+                        <td>${o.quantity}</td>
+                        <td>৳${subtotal.toFixed(2)}</td>
+                        <td>${new Date(o.created_at).toLocaleString()}</td>
+                    </tr>`;
+                }).join('');
+                tbody.innerHTML += `<tr class="total-row">
+                    <td colspan="3">Total:</td>
+                    <td colspan="2">৳${total.toFixed(2)}</td>
+                </tr>`;
+            } catch {
+                showMessage('Error loading receipt.', 'error');
+            }
+        }
+
+        // Replaces generate_pdf.php + fpdf
+        async function downloadPDF() {
+            const token = getToken();
+            const res = await fetch(`${API_BASE}/orders/receipt/pdf`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const blob = await res.blob();
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = 'Receipt.pdf';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        loadReceipt();
+    </script>
+</body>
+
+</html>

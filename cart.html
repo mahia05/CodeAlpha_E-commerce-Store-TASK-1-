@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Your Cart</title>
+    <link rel="stylesheet" href="css/style.css" />
+</head>
+
+<body>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="products.html">Products</a>
+        <a href="cart.html">Cart</a>
+        <a href="signup.html">Sign Up</a>
+        <a href="login.html">Login</a>
+    </nav>
+    <div id="flash-msg"></div>
+    <h2 style="text-align:center;">🛒 Your Cart</h2>
+    <div class="cart-container" id="cart-container">
+        <p style="text-align:center;">Loading...</p>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        injectHeader();
+        if (!isLoggedIn()) window.location.href = 'login.html';
+
+        async function loadCart() {
+            try {
+                const res = await authFetch(`${API_BASE}/cart`);
+                const items = await res.json();
+                renderCart(items);
+            } catch {
+                document.getElementById('cart-container').innerHTML = '<p>Error loading cart.</p>';
+            }
+        }
+
+        function renderCart(items) {
+            const container = document.getElementById('cart-container');
+            if (!items.length) {
+                container.innerHTML = `<p style="text-align:center;">Your cart is empty. <a href="products.html">Continue Shopping</a></p>`;
+                return;
+            }
+            let total = 0;
+            let html = items.map(item => {
+                const p = item.product_id;
+                const subtotal = p.price * item.quantity;
+                total += subtotal;
+                return `
+                <div class="cart-item">
+                    <img src="${p.image}" alt="${p.name}">
+                    <h4>${p.name}</h4>
+                    <p>Price: ${p.price} tk</p>
+                    <div>
+                        <input type="number" id="qty-${p._id}" value="${item.quantity}" min="1" style="width:50px;padding:4px;">
+                        <button onclick="updateQty('${p._id}')">Update</button>
+                    </div>
+                    <p>Subtotal: ${subtotal} tk</p>
+                    <a class="remove-link" onclick="removeItem('${p._id}')">Remove</a>
+                </div>`;
+            }).join('');
+            html += `<h3 class="total" style="width:100%;">Total: ${total.toFixed(2)} tk</h3>`;
+            container.innerHTML = html;
+            container.innerHTML += `
+                <div style="text-align:center;width:100%;margin-top:20px;">
+                    <a href="products.html">Continue Shopping</a> |
+                    <a href="checkout.html">Proceed to Checkout</a>
+                </div>`;
+        }
+
+        async function updateQty(productId) {
+            const qty = parseInt(document.getElementById(`qty-${productId}`).value);
+            await authFetch(`${API_BASE}/cart/update`, {
+                method: 'POST',
+                body: JSON.stringify({ product_id: productId, quantity: qty })
+            });
+            loadCart();
+        }
+
+        async function removeItem(productId) {
+            await authFetch(`${API_BASE}/cart/remove`, {
+                method: 'POST',
+                body: JSON.stringify({ product_id: productId })
+            });
+            loadCart();
+        }
+
+        loadCart();
+    </script>
+</body>
+
+</html>

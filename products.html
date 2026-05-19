@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Products - Handmade Marketplace</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="products.html">Products</a>
+        <a href="cart.html">Cart</a>
+        <a href="signup.html">Sign Up</a>
+        <a href="login.html">Login</a>
+    </nav>
+    <div id="flash-msg"></div>
+    <main>
+        <div id="product-list">
+            <h2>Handmade Categories</h2>
+            <div class="category-buttons">
+                <button onclick="filterCategory('all')">All</button>
+                <button onclick="filterCategory('jewelry')">Jewelry</button>
+                <button onclick="filterCategory('decor')">Decor</button>
+                <button onclick="filterCategory('clothing')">Clothing</button>
+                <button onclick="filterCategory('bags')">Bags</button>
+            </div>
+            <div class="products-container" id="products-container">
+                <p>Loading products...</p>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/config.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        injectHeader();
+        let allProducts = [];
+
+        async function loadProducts() {
+            try {
+                const res = await fetch(`${API_BASE}/products`);
+                allProducts = await res.json();
+                renderProducts(allProducts);
+            } catch {
+                document.getElementById('products-container').innerHTML = '<p>Error loading products.</p>';
+            }
+        }
+
+        function renderProducts(products) {
+            const container = document.getElementById('products-container');
+            if (!products.length) { container.innerHTML = '<p>No products found.</p>'; return; }
+            container.innerHTML = products.map(p => `
+                <div class="product-card" data-category="${p.category}">
+                    <img src="${p.image}" alt="${p.name}">
+                    <h3>${p.name}</h3>
+                    <p>${p.price} Tk</p>
+                    <button onclick="addToCart('${p._id}')">Add to Cart</button>
+                </div>
+            `).join('');
+        }
+
+        function filterCategory(cat) {
+            renderProducts(cat === 'all' ? allProducts : allProducts.filter(p => p.category === cat));
+        }
+
+        // Replaces add_to_cart.php + signup_login_flow.php logic
+        async function addToCart(productId) {
+            if (!isLoggedIn()) {
+                localStorage.setItem('pending_product', productId);
+                window.location.href = 'login.html';
+                return;
+            }
+            try {
+                const res = await authFetch(`${API_BASE}/cart/add`, {
+                    method: 'POST',
+                    body: JSON.stringify({ product_id: productId })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    showMessage('✅ Product added to cart!', 'success');
+                } else {
+                    showMessage(data.error || 'Error adding to cart.', 'error');
+                }
+            } catch {
+                showMessage('Server error.', 'error');
+            }
+        }
+
+        loadProducts();
+    </script>
+</body>
+
+</html>

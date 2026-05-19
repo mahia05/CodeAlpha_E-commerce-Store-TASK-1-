@@ -2,34 +2,66 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <title>Page Title</title>
-    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8" />
+    <title>Login Page</title>
+    <link rel="stylesheet" href="css/style.css" />
 </head>
 
 <body>
-
     <nav>
         <a href="index.html">Home</a>
-        <a href="product.html">Products</a>
+        <a href="products.html">Products</a>
         <a href="cart.html">Cart</a>
         <a href="signup.html">Sign Up</a>
         <a href="login.html">Login</a>
     </nav>
+    <main>
+        <h2>Login</h2>
+        <div id="flash-msg"></div>
+        <form id="login-form">
+            <label>Email:</label><br />
+            <input type="email" name="email" required /><br />
+            <label>Password:</label><br />
+            <input type="password" name="password" required /><br /><br />
+            <input type="submit" value="Login" />
+        </form>
+        <p>Not registered? <a href="signup.html">Sign up here</a></p>
+    </main>
+    <script src="js/config.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        // If already logged in, redirect
+        if (isLoggedIn()) window.location.href = 'index.html';
 
-    <body>
-        <main>
-            <h2>Login</h2>
-            <form action="php/login.php" method="POST">
-                <label>Email:</label><br>
-                <input type="email" name="email" required><br>
-
-                <label>Password:</label><br>
-                <input type="password" name="password" required><br><br>
-
-                <input type="submit" value="Login">
-            </form>
-        </main>
-    </body>
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const form = e.target;
+            try {
+                const res = await fetch(`${API_BASE}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: form.email.value, password: form.password.value })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    // Check if there's a pending cart redirect
+                    const pending = localStorage.getItem('pending_product');
+                    if (pending) {
+                        localStorage.removeItem('pending_product');
+                        window.location.href = 'products.html';
+                    } else {
+                        window.location.href = 'index.html';
+                    }
+                } else {
+                    showMessage(data.error || 'Login failed.', 'error');
+                }
+            } catch {
+                showMessage('Server error.', 'error');
+            }
+        });
+    </script>
+</body>
 
 </html>

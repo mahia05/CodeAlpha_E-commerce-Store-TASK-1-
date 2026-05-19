@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Checkout</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="products.html">Products</a>
+        <a href="cart.html">Cart</a>
+        <a href="signup.html">Sign Up</a>
+        <a href="login.html">Login</a>
+    </nav>
+    <div id="flash-msg"></div>
+    <main>
+        <h2>Checkout</h2>
+        <form id="checkout-form">
+            <label>Full Name:</label><br>
+            <input type="text" name="fullname" required><br>
+            <label>Address:</label><br>
+            <textarea name="address" required></textarea><br>
+            <label>Payment Method:</label><br>
+            <select name="payment">
+                <option value="cash">Cash on Delivery</option>
+                <option value="bkash">bKash</option>
+            </select><br><br>
+            <input type="submit" value="Place Order">
+        </form>
+    </main>
+
+    <script src="js/config.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        injectHeader();
+        if (!isLoggedIn()) window.location.href = 'login.html';
+
+        document.getElementById('checkout-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const form = e.target;
+            try {
+                const res = await authFetch(`${API_BASE}/orders/place`, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        fullname: form.fullname.value,
+                        address: form.address.value,
+                        payment_method: form.payment.value
+                    })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    // Redirect to receipt like process_order.php did
+                    showMessage('✅ Order placed successfully! Redirecting to receipt...', 'success');
+                    setTimeout(() => window.location.href = 'receipt.html', 2000);
+                } else {
+                    showMessage(data.error || 'Error placing order.', 'error');
+                }
+            } catch {
+                showMessage('Server error.', 'error');
+            }
+        });
+    </script>
+</body>
+
+</html>

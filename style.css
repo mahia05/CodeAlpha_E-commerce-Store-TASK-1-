@@ -1,3 +1,4 @@
+/* ===== Your Original CSS ===== */
 body {
     font-family: Arial, sans-serif;
     margin: 0;
@@ -5,11 +6,12 @@ body {
     background-color: #f4f4f4;
 }
 
-/*Navigation Bar */
+/* ===== Navigation Bar ===== */
 nav {
     background-color: #333;
     padding: 10px 20px;
     text-align: center;
+    position: relative;
 }
 
 nav a {
@@ -23,7 +25,47 @@ nav a:hover {
     text-decoration: underline;
 }
 
-/*Banner section */
+/* ===== Profile Dropdown Styling ===== */
+.user-profile {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    display: inline-block;
+    color: white;
+    cursor: pointer;
+}
+
+.user-profile .dropdown {
+    display: none;
+    position: absolute;
+    right: 0;
+    background: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    overflow: hidden;
+    z-index: 999;
+    min-width: 150px;
+    text-align: left;
+}
+
+.user-profile:hover .dropdown {
+    display: block;
+}
+
+.user-profile .dropdown a {
+    display: block;
+    padding: 10px;
+    color: #333;
+    text-decoration: none;
+    font-weight: normal;
+    border-bottom: 1px solid #ddd;
+}
+
+.user-profile .dropdown a:hover {
+    background-color: #f0f0f0;
+}
+
+/* ====Banner section =====*/
 .banner {
     background-image: url('images/banner.jpg');
     background-size: cover;
@@ -40,13 +82,13 @@ nav a:hover {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-/* Main Section */
+/* ===== Main Section ===== */
 main {
     padding: 30px;
     text-align: center;
 }
 
-/* Buttons*/
+/* ===== Buttons ===== */
 button {
     background-color: teal;
     color: white;
@@ -81,48 +123,10 @@ select {
     margin: 10px 0;
     border: 1px solid #ccc;
     border-radius: 4px;
+    box-sizing: border-box;
 }
 
-/* Product Cards */
-.products-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    justify-content: center;
-    padding: 20px;
-}
-
-.product-card {
-    /*display: inline-block;*/
-    width: 300px;
-    background-color: white;
-    margin: 20px;
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    vertical-align: top;
-    text-align: center;
-}
-
-.product-card img {
-    width: 100%;
-    height: 300px;
-    object-fit: cover;
-    border-radius: 6px;
-    display: block;
-    margin: 0 auto 10px;
-}
-
-.product-card h3 {
-    margin: 10px 0 5px;
-}
-
-.product-card p {
-    font-weight: bold;
-    color: teal;
-}
-
-/* Footer */
+/* ===== Footer ===== */
 footer {
     background-color: #333;
     color: white;
@@ -130,3 +134,290 @@ footer {
     padding: 15px;
     margin-top: 40px;
 }
+
+/* ===== Additional CSS for Signup & Login Forms and Messages ===== */
+.message {
+    max-width: 400px;
+    margin: 10px auto;
+    padding: 12px 18px;
+    border-radius: 8px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.message.success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.message.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+input[type="submit"],
+button[type="submit"] {
+    width: 100%;
+    font-size: 18px;
+    padding: 12px 0;
+    border-radius: 8px;
+    margin-top: 15px;
+    transition: background-color 0.3s ease;
+}
+
+input[type="submit"]:hover,
+button[type="submit"]:hover {
+    background-color: #004d40;
+}
+
+label {
+    font-weight: 600;
+    margin-top: 12px;
+    display: block;
+}
+
+/* ===== Admin Login Button ===== */
+.admin-login-button {
+    position: fixed;
+    top: 20px;
+    right: 30px;
+    background-color: #c0392b;
+    color: white;
+    padding: 10px 15px;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease;
+    z-index: 999;
+}
+
+.admin-login-button:hover {
+    background-color: #a93226;
+}
+
+/* ===== Profile Icon (header.php style) ===== */
+.profile-container {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+}
+
+.profile-icon {
+    font-size: 22px;
+    cursor: pointer;
+    color: white;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 30px;
+    background-color: white;
+    border: 1px solid #ddd;
+    min-width: 150px;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+}
+
+.dropdown-content a {
+    padding: 10px;
+    display: block;
+    text-decoration: none;
+    color: black;
+    font-weight: normal;
+}
+
+.dropdown-content a:hover {
+    background-color: #f0f0f0;
+}
+
+/* ===== Product Cards ===== */
+.products-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 30px;
+    padding: 30px 20px;
+}
+
+.product-card {
+    width: 300px;
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    text-align: center;
+}
+
+.product-card img {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    border-radius: 12px;
+    margin-bottom: 16px;
+}
+
+.product-card h3 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #002f6c;
+}
+
+.product-card p {
+    font-size: 18px;
+    font-weight: 600;
+    color: #444;
+    margin: 10px 0;
+}
+
+/* ===== Category Filter Buttons ===== */
+.category-buttons {
+    margin: 20px 0;
+    text-align: center;
+}
+
+.category-buttons button {
+    margin: 5px;
+    width: auto;
+    font-size: 14px;
+    padding: 8px 16px;
+}
+
+/* ===== Cart ===== */
+.cart-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 20px;
+    justify-content: center;
+}
+
+.cart-item {
+    width: 280px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    text-align: center;
+}
+
+.cart-item img {
+    width: 250px;
+    height: 250px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.cart-item h4 {
+    margin: 10px 0 5px;
+}
+
+.cart-item input[type="number"] {
+    width: 50px;
+    padding: 4px;
+}
+
+.cart-item button {
+    padding: 5px 10px;
+    margin-left: 5px;
+    width: auto;
+}
+
+.remove-link {
+    display: block;
+    color: red;
+    margin-top: 10px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+h3.total {
+    text-align: center;
+}
+
+/* ===== Receipt Table ===== */
+.receipt-table {
+    width: 90%;
+    border-collapse: collapse;
+    margin: 20px auto;
+}
+
+.receipt-table,
+.receipt-table th,
+.receipt-table td {
+    border: 1px solid #aaa;
+}
+
+.receipt-table th,
+.receipt-table td {
+    padding: 10px;
+    text-align: center;
+}
+
+.receipt-table th {
+    background-color: #ddd;
+}
+
+.total-row {
+    background-color: #f0f0f0;
+    font-weight: bold;
+}
+
+/* ===== Admin Dashboard ===== */
+.admin-nav {
+    background-color: #333;
+    padding: 10px 20px;
+    text-align: center;
+}
+
+.admin-nav a {
+    color: white;
+    margin: 0 15px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.admin-nav a:hover {
+    text-decoration: underline;
+}
+
+.actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+.actions a {
+    padding: 8px 12px;
+    border-radius: 20px;
+    text-decoration: none;
+    font-weight: 600;
+    color: white;
+    transition: 0.3s;
+}
+
+.edit-btn {
+    background-color: #007bff;
+}
+
+.edit-btn:hover {
+    background-color: #0056b3;
+}
+
+.delete-btn {
+    background-color: #dc3545;
+}
+
+.delete-btn:hover {
+    background-color: #b02a37;
+}
+
+s

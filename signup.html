@@ -2,37 +2,61 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <title>Page Title</title>
-    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8" />
+    <title>Sign Up</title>
+    <link rel="stylesheet" href="css/style.css" />
 </head>
 
 <body>
-
     <nav>
         <a href="index.html">Home</a>
-        <a href="product.html">Products</a>
-        <a href="cart.html">Cart</a>
+        <a href="products.html">Products</a>
         <a href="signup.html">Sign Up</a>
         <a href="login.html">Login</a>
     </nav>
-
-    <body>
-        <main>
-            <h2>Create Account</h2>
-            <form action="php/signup.php" method="POST">
-                <label>Name:</label><br>
-                <input type="text" name="name" required><br>
-
-                <label>Email:</label><br>
-                <input type="email" name="email" required><br>
-
-                <label>Password:</label><br>
-                <input type="password" name="password" required><br><br>
-
-                <input type="submit" value="Signup">
-            </form>
-        </main>
-    </body>
+    <main>
+        <h2>Create Account</h2>
+        <div id="flash-msg"></div>
+        <form id="signup-form">
+            <label>Name:</label><br />
+            <input type="text" name="name" required /><br />
+            <label>Email:</label><br />
+            <input type="email" name="email" required /><br />
+            <label>Password:</label><br />
+            <input type="password" name="password" required pattern="(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}"
+                title="At least 8 chars, one uppercase, one number, one special character." /><br />
+            <button type="submit">Sign Up</button>
+        </form>
+        <p>Already have an account? <a href="login.html">Login here</a></p>
+    </main>
+    <script src="js/config.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        document.getElementById('signup-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const form = e.target;
+            try {
+                const res = await fetch(`${API_BASE}/auth/signup`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name: form.name.value,
+                        email: form.email.value,
+                        password: form.password.value
+                    })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    showMessage(data.message + ' <a href="login.html">Click here to Login</a>', 'success');
+                    form.reset();
+                } else {
+                    showMessage(data.error || 'Signup failed.', 'error');
+                }
+            } catch {
+                showMessage('Server error.', 'error');
+            }
+        });
+    </script>
+</body>
 
 </html>
