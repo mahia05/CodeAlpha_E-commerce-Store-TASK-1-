@@ -40,7 +40,7 @@ router.post('/login', async (req, res) => {
 });
 
 // POST /api/auth/check — verify token validity
-router.get('/check', require('../middleware/auth'), (req, res) => {
+router.get('/check', require('../Middleware/auth'), (req, res) => {
     res.json({ loggedIn: true, user: req.user });
 });
 
