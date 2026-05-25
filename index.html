@@ -5,28 +5,107 @@
     <meta charset="UTF-8">
     <title>Handmade Product Marketplace</title>
     <link rel="stylesheet" href="css/style.css">
+    <style>
+        .banner {
+            position: relative;
+            height: 350px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            border-radius: 10px;
+            margin: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            background-color: #0b4646;
+        }
+
+        .banner img.banner-bg {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+        }
+
+        .banner-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.40);
+            z-index: 1;
+        }
+
+        .banner-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .banner-content h2 {
+            font-size: 2.4rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.6);
+        }
+
+        .banner-content p {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .banner-content .shop-btn {
+            display: inline-block;
+            padding: 12px 35px;
+            background-color: white;
+            color: #0b4646;
+            font-weight: bold;
+            font-size: 1rem;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+        .banner-content .shop-btn:hover {
+            background-color: #0b4646;
+            color: white;
+        }
+    </style>
 </head>
 
 <body>
-    <header>
-        <h1>Local Handmade Product Marketplace</h1>
-        <nav>
-            <a href="index.html">Home</a>
-            <a href="products.html">Products</a>
-            <a href="signup.html">Sign Up</a>
-            <a href="login.html">Login</a>
-            <a href="admin_login.html" class="admin-login-button">Admin Login</a>
-        </nav>
-        <section class="banner"></section>
-    </header>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="products.html">Products</a>
+        <a href="cart.html">Cart</a>
+        <a href="signup.html">Sign Up</a>
+        <a href="login.html">Login</a>
+        <a href="Admin/admin_login.html" class="admin-login-button">Admin Login</a>
+    </nav>
+
+    <div id="flash-msg"></div>
+
+    <!-- Banner: image placed in HTML so it always renders -->
+    <div class="banner">
+        <img class="banner-bg" src="images/banner.jpg" alt="Banner">
+        <div class="banner-overlay"></div>
+        <div class="banner-content">
+            <h2>Handmade with Love</h2>
+            <p>Browse, Buy, and Support Local Artisans!</p>
+            <a href="products.html" class="shop-btn">Shop Now</a>
+        </div>
+    </div>
+
     <main>
-        <h2>Welcome to Our Handmade Product Marketplace</h2>
-        <p>Browse, Buy, and Support Local Artisans!</p>
-        <a href="products.html"><button>Shop Now</button></a>
+        <h2 style="text-align:center; color:#0b4646; margin-top:30px;">Welcome to Our Marketplace</h2>
+        <p style="text-align:center; color:#555; margin-bottom:40px;">Discover unique handmade products crafted by
+            talented local artisans.</p>
     </main>
+
     <footer>
         <p>&copy; 2025 Handmade Market</p>
     </footer>
+
     <script src="js/config.js"></script>
     <script src="js/auth.js"></script>
     <script>injectHeader();</script>

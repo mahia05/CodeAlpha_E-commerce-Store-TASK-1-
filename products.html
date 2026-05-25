@@ -15,10 +15,12 @@
         <a href="signup.html">Sign Up</a>
         <a href="login.html">Login</a>
     </nav>
+
     <div id="flash-msg"></div>
+
     <main>
         <div id="product-list">
-            <h2>Handmade Categories</h2>
+            <h2 style="text-align:center; color:#0b4646; margin-top:20px;">Products</h2>
             <div class="category-buttons">
                 <button onclick="filterCategory('all')">All</button>
                 <button onclick="filterCategory('jewelry')">Jewelry</button>
@@ -27,7 +29,7 @@
                 <button onclick="filterCategory('bags')">Bags</button>
             </div>
             <div class="products-container" id="products-container">
-                <p>Loading products...</p>
+                <p style="text-align:center;">Loading products...</p>
             </div>
         </div>
     </main>
@@ -36,36 +38,55 @@
     <script src="js/auth.js"></script>
     <script>
         injectHeader();
-        let allProducts = [];
+
+        // Check if opened in admin view mode
+        var isAdminView = window.location.search.indexOf('admin=true') !== -1;
+
+        var allProducts = [];
 
         async function loadProducts() {
             try {
-                const res = await fetch(`${API_BASE}/products`);
+                var res = await fetch(API_BASE + '/products');
                 allProducts = await res.json();
                 renderProducts(allProducts);
-            } catch {
-                document.getElementById('products-container').innerHTML = '<p>Error loading products.</p>';
+            } catch (err) {
+                document.getElementById('products-container').innerHTML =
+                    '<p style="text-align:center; color:red;">Error loading products. Make sure backend is running.</p>';
             }
         }
 
         function renderProducts(products) {
-            const container = document.getElementById('products-container');
-            if (!products.length) { container.innerHTML = '<p>No products found.</p>'; return; }
-            container.innerHTML = products.map(p => `
-                <div class="product-card" data-category="${p.category}">
-                    <img src="${p.image}" alt="${p.name}">
-                    <h3>${p.name}</h3>
-                    <p>${p.price} Tk</p>
-                    <button onclick="addToCart('${p._id}')">Add to Cart</button>
-                </div>
-            `).join('');
+            var container = document.getElementById('products-container');
+
+            if (!products.length) {
+                container.innerHTML = '<p style="text-align:center;">No products found in this category.</p>';
+                return;
+            }
+
+            container.innerHTML = products.map(function (p) {
+                // If admin view, show no Add to Cart button
+                var actionBtn = '';
+                if (!isAdminView) {
+                    actionBtn = '<button onclick="addToCart(\'' + p._id + '\')">Add to Cart</button>';
+                }
+
+                return '<div class="product-card" data-category="' + p.category + '">' +
+                    '<img src="' + p.image + '" alt="' + p.name + '">' +
+                    '<h3>' + p.name + '</h3>' +
+                    '<p>' + p.price + ' Tk</p>' +
+                    actionBtn +
+                    '</div>';
+            }).join('');
         }
 
         function filterCategory(cat) {
-            renderProducts(cat === 'all' ? allProducts : allProducts.filter(p => p.category === cat));
+            if (cat === 'all') {
+                renderProducts(allProducts);
+            } else {
+                renderProducts(allProducts.filter(function (p) { return p.category === cat; }));
+            }
         }
 
-        // Replaces add_to_cart.php + signup_login_flow.php logic
         async function addToCart(productId) {
             if (!isLoggedIn()) {
                 localStorage.setItem('pending_product', productId);
@@ -73,17 +94,18 @@
                 return;
             }
             try {
-                const res = await authFetch(`${API_BASE}/cart/add`, {
+                var res = await authFetch(API_BASE + '/cart/add', {
                     method: 'POST',
                     body: JSON.stringify({ product_id: productId })
                 });
-                const data = await res.json();
+                var data = await res.json();
+
                 if (res.ok) {
-                    showMessage('✅ Product added to cart!', 'success');
+                    showMessage('Product added to cart!', 'success');
                 } else {
-                    showMessage(data.error || 'Error adding to cart.', 'error');
+                    showMessage(data.error || 'Could not add to cart.', 'error');
                 }
-            } catch {
+            } catch (err) {
                 showMessage('Server error.', 'error');
             }
         }

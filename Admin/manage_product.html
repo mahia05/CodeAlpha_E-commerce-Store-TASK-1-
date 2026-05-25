@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Products</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f3f7fb;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            text-align: center;
+            padding: 20px;
+            color: #0b4646;
+        }
+
+        /* Edit Modal */
+        #edit-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-box {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            width: 420px;
+            max-width: 90%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-box h2 {
+            margin-top: 0;
+            color: #0b4646;
+        }
+
+        .modal-box input[type="text"],
+        .modal-box input[type="number"],
+        .modal-box select {
+            width: 100%;
+            padding: 9px 11px;
+            margin: 7px 0 14px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+
+        .modal-box input[type="file"] {
+            margin: 6px 0 5px;
+        }
+
+        .modal-box small {
+            color: #888;
+            font-size: 12px;
+        }
+
+        #edit-img-preview {
+            width: 130px;
+            border-radius: 8px;
+            margin: 8px 0;
+            display: block;
+        }
+
+        .modal-actions {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .modal-actions button {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .btn-save {
+            background-color: #0b4646;
+            color: white;
+        }
+
+        .btn-save:hover {
+            background-color: #093a3a;
+        }
+
+        .btn-cancel {
+            background-color: #777;
+            color: white;
+        }
+
+        .btn-cancel:hover {
+            background-color: #555;
+        }
+
+        .flash {
+            padding: 10px 14px;
+            border-radius: 6px;
+            margin: 10px 20px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .flash.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .flash.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="admin-nav">
+        <a href="admin_dashboard.html">Dashboard</a>
+        <a href="admin_add_product.html">Add Product</a>
+        <a href="../products.html?admin=true" target="_blank">View Site</a>
+        <a href="#" onclick="adminLogout()">Logout</a>
+    </nav>
+
+    <h1>Manage Products</h1>
+    <div id="flash-msg"></div>
+
+    <div class="products-container" id="products-container">
+        <p style="text-align:center;">Loading...</p>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="edit-modal">
+        <div class="modal-box">
+            <h2>Edit Product</h2>
+            <input type="hidden" id="edit-id">
+
+            <label>Product Name</label>
+            <input type="text" id="edit-name" placeholder="Product Name">
+
+            <label>Price (Tk)</label>
+            <input type="number" id="edit-price" placeholder="Price" step="0.01">
+
+            <label>Category</label>
+            <select id="edit-category">
+                <option value="jewelry">Jewelry</option>
+                <option value="decor">Decor</option>
+                <option value="clothing">Clothing</option>
+                <option value="bags">Bags</option>
+                <option value="other">Other</option>
+            </select>
+
+            <label>Current Image</label>
+            <img id="edit-img-preview" src="" alt="Current Image">
+
+            <label>Change Image (optional)</label>
+            <input type="file" id="edit-image" accept="image/*">
+            <small>Leave empty to keep existing image</small>
+
+            <div class="modal-actions">
+                <button class="btn-save" onclick="saveEdit()">Update Product</button>
+                <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/config.js"></script>
+    <script>
+        const adminToken = localStorage.getItem('admin_token');
+        if (!adminToken) window.location.href = 'admin_login.html';
+
+        function adminLogout() {
+            localStorage.removeItem('admin_token');
+            localStorage.removeItem('admin_user');
+            window.location.href = 'admin_login.html';
+        }
+
+        function showMsg(msg, type) {
+            var el = document.getElementById('flash-msg');
+            el.innerHTML = '<div class="flash ' + type + '">' + msg + '</div>';
+            if (type === 'success') setTimeout(function () { el.innerHTML = ''; }, 3500);
+        }
+
+        async function loadProducts() {
+            try {
+                var res = await fetch(API_BASE + '/admin/products', {
+                    headers: { 'Authorization': 'Bearer ' + adminToken }
+                });
+                var products = await res.json();
+                var container = document.getElementById('products-container');
+
+                if (!products.length) {
+                    container.innerHTML = '<p style="text-align:center;">No products found. Add some!</p>';
+                    return;
+                }
+
+                container.innerHTML = products.map(function (p) {
+                    return '<div class="product-card">' +
+                        '<img src="' + p.image + '" alt="' + p.name + '">' +
+                        '<h3>' + p.name + '</h3>' +
+                        '<p>' + p.price + ' Tk</p>' +
+                        '<div class="actions">' +
+                        '<a class="edit-btn" style="cursor:pointer;" onclick=\'openEdit(' + JSON.stringify(p) + ')\'>Edit</a>' +
+                        '<a class="delete-btn" style="cursor:pointer;" onclick="deleteProduct(\'' + p._id + '\',\'' + p.name + '\')">Delete</a>' +
+                        '</div>' +
+                        '</div>';
+                }).join('');
+            } catch (err) {
+                document.getElementById('products-container').innerHTML =
+                    '<p style="text-align:center; color:red;">Error loading products. Check if backend is running.</p>';
+            }
+        }
+
+        function openEdit(p) {
+            document.getElementById('edit-id').value = p._id;
+            document.getElementById('edit-name').value = p.name;
+            document.getElementById('edit-price').value = p.price;
+            document.getElementById('edit-category').value = p.category;
+            document.getElementById('edit-img-preview').src = p.image;
+            document.getElementById('edit-image').value = '';
+            document.getElementById('edit-modal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('edit-modal').style.display = 'none';
+        }
+
+        async function saveEdit() {
+            var id = document.getElementById('edit-id').value;
+            var formData = new FormData();
+            formData.append('name', document.getElementById('edit-name').value);
+            formData.append('price', document.getElementById('edit-price').value);
+            formData.append('category', document.getElementById('edit-category').value);
+
+            var imgFile = document.getElementById('edit-image').files[0];
+            if (imgFile) formData.append('image', imgFile);
+
+            try {
+                var res = await fetch(API_BASE + '/admin/products/' + id, {
+                    method: 'PUT',
+                    headers: { 'Authorization': 'Bearer ' + adminToken },
+                    body: formData
+                });
+                var data = await res.json();
+
+                if (res.ok) {
+                    showMsg('Product updated successfully!', 'success');
+                    closeModal();
+                    loadProducts();
+                } else {
+                    showMsg(data.error || 'Update failed.', 'error');
+                }
+            } catch (err) {
+                showMsg('Server error.', 'error');
+            }
+        }
+
+        async function deleteProduct(id, name) {
+            if (!confirm('Delete "' + name + '"? This cannot be undone.')) return;
+
+            try {
+                var res = await fetch(API_BASE + '/admin/products/' + id, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': 'Bearer ' + adminToken }
+                });
+                var data = await res.json();
+
+                if (res.ok) {
+                    showMsg('Product deleted successfully!', 'success');
+                    loadProducts();
+                } else {
+                    showMsg(data.error || 'Delete failed.', 'error');
+                }
+            } catch (err) {
+                showMsg('Server error.', 'error');
+            }
+        }
+
+        loadProducts();
+    </script>
+</body>
+
+</html>

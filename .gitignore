@@ -1,0 +1,13 @@
+# Environment variables - never push this to GitHub
+.env
+
+# Dependencies - too large to push
+node_modules/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db

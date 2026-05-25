@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Add New Product</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        body {
+            background-color: #f5f5f5;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .form-wrapper {
+            display: flex;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        .form-container {
+            background-color: #ffffff;
+            padding: 40px 35px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 480px;
+        }
+
+        .form-container h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #0b4646;
+        }
+
+        .form-container label {
+            font-weight: 600;
+            color: #333;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .form-container input[type="text"],
+        .form-container input[type="number"],
+        .form-container select {
+            width: 100%;
+            padding: 11px 12px;
+            margin-bottom: 18px;
+            border: 1px solid #ccc;
+            border-radius: 7px;
+            font-size: 15px;
+            box-sizing: border-box;
+        }
+
+        .form-container input:focus,
+        .form-container select:focus {
+            border-color: #0b4646;
+            outline: none;
+        }
+
+        .file-area {
+            border: 2px dashed #0b4646;
+            border-radius: 8px;
+            padding: 18px;
+            text-align: center;
+            margin-bottom: 20px;
+            background: #f0fafa;
+        }
+
+        .file-area input[type="file"] {
+            width: 100%;
+        }
+
+        #image-preview {
+            max-width: 100%;
+            max-height: 180px;
+            border-radius: 8px;
+            margin-top: 10px;
+            display: none;
+            object-fit: contain;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 13px;
+            background-color: #0b4646;
+            color: white;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .submit-btn:hover {
+            background-color: #093a3a;
+        }
+
+        .submit-btn:disabled {
+            background-color: #999;
+            cursor: not-allowed;
+        }
+
+        .flash {
+            padding: 10px 14px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .flash.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .flash.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .back-link a {
+            color: #0b4646;
+            text-decoration: none;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="admin-nav">
+        <a href="admin_dashboard.html">Dashboard</a>
+        <a href="admin_add_product.html">Add Product</a>
+        <a href="manage_product.html">Manage Products</a>
+        <a href="../products.html?admin=true" target="_blank">View Site</a>
+        <a href="#" onclick="adminLogout()">Logout</a>
+    </nav>
+
+    <div class="form-wrapper">
+        <div class="form-container">
+            <h2>Add New Product</h2>
+            <div id="flash-msg"></div>
+
+            <form id="add-form">
+                <label>Product Name</label>
+                <input type="text" name="name" placeholder="Product name" required>
+
+                <label>Price (Tk)</label>
+                <input type="number" name="price" placeholder="e.g. 450" step="0.01" min="1" required>
+
+                <label>Category</label>
+                <select name="category" required>
+                    <option value="">-- Select Category --</option>
+                    <option value="jewelry">Jewelry</option>
+                    <option value="decor">Decor</option>
+                    <option value="clothing">Clothing</option>
+                    <option value="bags">Bags</option>
+                    <option value="other">Other</option>
+                </select>
+
+                <label>Product Image</label>
+                <div class="file-area">
+                    <input type="file" id="image-input" name="image" accept="image/*" required>
+                    <img id="image-preview" alt="Preview">
+                </div>
+
+                <button type="submit" class="submit-btn" id="submit-btn">Add Product</button>
+            </form>
+
+            <div class="back-link">
+                <a href="admin_dashboard.html">Back to Dashboard</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/config.js"></script>
+    <script>
+        const adminToken = localStorage.getItem('admin_token');
+        if (!adminToken) window.location.href = 'admin_login.html';
+
+        function adminLogout() {
+            localStorage.removeItem('admin_token');
+            localStorage.removeItem('admin_user');
+            window.location.href = 'admin_login.html';
+        }
+
+        function showMsg(msg, type) {
+            document.getElementById('flash-msg').innerHTML =
+                '<div class="flash ' + type + '">' + msg + '</div>';
+            if (type === 'success') {
+                setTimeout(function () {
+                    document.getElementById('flash-msg').innerHTML = '';
+                }, 4000);
+            }
+        }
+
+        // Live image preview
+        document.getElementById('image-input').addEventListener('change', function () {
+            var preview = document.getElementById('image-preview');
+            if (this.files && this.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(this.files[0]);
+            }
+        });
+
+        document.getElementById('add-form').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            var name = this.name.value.trim();
+            var price = this.price.value;
+            var category = this.category.value;
+            var imageFile = document.getElementById('image-input').files[0];
+
+            if (!name || !price || !category || !imageFile) {
+                showMsg('Please fill all fields and select an image.', 'error');
+                return;
+            }
+
+            var btn = document.getElementById('submit-btn');
+            btn.disabled = true;
+            btn.textContent = 'Uploading...';
+
+            var formData = new FormData();
+            formData.append('name', name);
+            formData.append('price', price);
+            formData.append('category', category);
+            formData.append('image', imageFile);
+
+            try {
+                var res = await fetch(API_BASE + '/admin/products', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + adminToken
+                        // Do NOT set Content-Type - browser sets multipart automatically
+                    },
+                    body: formData
+                });
+                var data = await res.json();
+
+                if (res.ok) {
+                    showMsg('Product added successfully!', 'success');
+                    this.reset();
+                    document.getElementById('image-preview').style.display = 'none';
+                } else {
+                    showMsg(data.error || 'Failed to add product.', 'error');
+                }
+            } catch (err) {
+                showMsg('Server error. Make sure backend is running on ' + API_BASE, 'error');
+            }
+
+            btn.disabled = false;
+            btn.textContent = 'Add Product';
+        });
+    </script>
+</body>
+
+</html>

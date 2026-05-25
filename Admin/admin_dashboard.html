@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #e8f5f5;
+            margin: 0;
+            padding: 0;
+        }
+
+        .dashboard-header {
+            background: linear-gradient(135deg, #0b4646, #1a7a7a);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .dashboard-header h2 {
+            margin: 0 0 5px;
+            font-size: 1.8rem;
+        }
+
+        .dashboard-header p {
+            margin: 0;
+            opacity: 0.85;
+        }
+
+        .admin-info {
+            text-align: center;
+            padding: 12px;
+            background: #f0fafa;
+            color: #0b4646;
+            font-size: 0.95rem;
+            border-bottom: 1px solid #c5e8e8;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 40px;
+            max-width: 860px;
+            margin: 0 auto;
+        }
+
+        .dashboard-card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px 20px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            text-decoration: none;
+            color: #0b4646;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: block;
+            cursor: pointer;
+            border: none;
+            font-size: 1rem;
+            font-family: inherit;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .dashboard-card .icon {
+            font-size: 2.5rem;
+            margin-bottom: 12px;
+        }
+
+        .dashboard-card h3 {
+            margin: 0 0 6px;
+            font-size: 1.05rem;
+        }
+
+        .dashboard-card p {
+            margin: 0;
+            color: #777;
+            font-size: 0.85rem;
+        }
+
+        .logout-card {
+            background: #fff5f5;
+            color: #c0392b;
+        }
+
+        .logout-card:hover {
+            background: #ffe8e8;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dashboard-header">
+        <h2>Admin Dashboard</h2>
+        <p>Handmade Marketplace Management</p>
+    </div>
+
+    <div class="admin-info">
+        Logged in as: <strong id="admin-name"></strong>
+    </div>
+
+    <div class="dashboard-grid">
+        <a href="admin_add_product.html" class="dashboard-card">
+            <div class="icon">➕</div>
+            <h3>Add Product</h3>
+            <p>Add new products to the database</p>
+        </a>
+
+        <a href="manage_product.html" class="dashboard-card">
+            <div class="icon">🛠️</div>
+            <h3>Manage Products</h3>
+            <p>Edit or delete existing products</p>
+        </a>
+
+        <!-- Opens products page with ?admin=true so cart/buy buttons are hidden -->
+        <a href="../products.html?admin=true" target="_blank" class="dashboard-card">
+            <div class="icon">🔍</div>
+            <h3>View All Products</h3>
+            <p>Preview the customer-facing store</p>
+        </a>
+
+        <button onclick="adminLogout()" class="dashboard-card logout-card">
+            <div class="icon">🚪</div>
+            <h3>Logout</h3>
+            <p>Sign out of admin panel</p>
+        </button>
+    </div>
+
+    <script src="../js/config.js"></script>
+    <script>
+        const adminToken = localStorage.getItem('admin_token');
+        if (!adminToken) {
+            window.location.href = 'admin_login.html';
+        }
+        document.getElementById('admin-name').textContent = localStorage.getItem('admin_user') || 'Admin';
+
+        function adminLogout() {
+            localStorage.removeItem('admin_token');
+            localStorage.removeItem('admin_user');
+            window.location.href = 'admin_login.html';
+        }
+    </script>
+</body>
+
+</html>
