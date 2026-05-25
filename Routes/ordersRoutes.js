@@ -3,7 +3,7 @@ const router = express.Router();
 const Order = require('../models/Order');
 const Cart = require('../models/Cart');
 const User = require('../models/User');
-const auth = require('../middleware/auth');
+const auth = require('../Middleware/auth');
 const PDFDocument = require('pdfkit');
 
 // POST /api/orders/place
