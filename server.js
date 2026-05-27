@@ -1,7 +1,8 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const connectDB = require('./db');
+
+const connectDB = require('./database/db');
 
 const app = express();
 connectDB();
@@ -16,11 +17,12 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use('/api/auth', require('./Routes/authRoutes'));
-app.use('/api/admin', require('./Routes/adminRoutes'));
-app.use('/api/products', require('./Routes/productsRoutes'));
-app.use('/api/cart', require('./Routes/cartRoutes'));
-app.use('/api/orders', require('./Routes/ordersRoutes'));
+
+app.use('/api/auth', require('./web/js/Routes/authRoutes'));
+app.use('/api/admin', require('./web/js/Routes/adminRoutes'));
+app.use('/api/products', require('./web/js/Routes/productsRoutes'));
+app.use('/api/cart', require('./web/js/Routes/cartRoutes'));
+app.use('/api/orders', require('./web/js/Routes/ordersRoutes'));
 
 app.get('/', (req, res) => {
     res.json({ status: 'Handmade Marketplace API is running', time: new Date() });
