@@ -6,7 +6,6 @@ const connectDB = require('./db');
 const app = express();
 connectDB();
 
-
 app.use(cors({
     origin: '*',
     credentials: true,
@@ -23,7 +22,6 @@ app.use('/api/products', require('./Routes/productsRoutes'));
 app.use('/api/cart', require('./Routes/cartRoutes'));
 app.use('/api/orders', require('./Routes/ordersRoutes'));
 
-// Health check - Render pings this to keep service alive
 app.get('/', (req, res) => {
     res.json({ status: 'Handmade Marketplace API is running', time: new Date() });
 });

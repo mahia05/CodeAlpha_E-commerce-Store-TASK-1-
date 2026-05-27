@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Admin Dashboard</title>
-    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../web/css/style.css">
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -101,31 +101,25 @@
         <h2>Admin Dashboard</h2>
         <p>Handmade Marketplace Management</p>
     </div>
-
     <div class="admin-info">
         Logged in as: <strong id="admin-name"></strong>
     </div>
-
     <div class="dashboard-grid">
         <a href="admin_add_product.html" class="dashboard-card">
             <div class="icon">➕</div>
             <h3>Add Product</h3>
             <p>Add new products to the database</p>
         </a>
-
         <a href="manage_product.html" class="dashboard-card">
             <div class="icon">🛠️</div>
             <h3>Manage Products</h3>
             <p>Edit or delete existing products</p>
         </a>
-
-        <!-- Opens products page with ?admin=true so cart/buy buttons are hidden -->
-        <a href="../products.html?admin=true" target="_blank" class="dashboard-card">
+        <a href="../web/products.html?admin=true" target="_blank" class="dashboard-card">
             <div class="icon">🔍</div>
             <h3>View All Products</h3>
             <p>Preview the customer-facing store</p>
         </a>
-
         <button onclick="adminLogout()" class="dashboard-card logout-card">
             <div class="icon">🚪</div>
             <h3>Logout</h3>
@@ -133,12 +127,10 @@
         </button>
     </div>
 
-    <script src="../js/config.js"></script>
+    <script src="../web/js/config.js"></script>
     <script>
-        const adminToken = localStorage.getItem('admin_token');
-        if (!adminToken) {
-            window.location.href = 'admin_login.html';
-        }
+        var adminToken = localStorage.getItem('admin_token');
+        if (!adminToken) window.location.href = 'admin_login.html';
         document.getElementById('admin-name').textContent = localStorage.getItem('admin_user') || 'Admin';
 
         function adminLogout() {

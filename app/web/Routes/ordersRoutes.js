@@ -12,7 +12,6 @@ router.post('/place', auth, async (req, res) => {
     try {
         const cartItems = await Cart.find({ user_id: req.user.id }).populate('product_id');
         if (!cartItems.length) return res.status(400).json({ error: 'Cart is empty.' });
-
         const orderDocs = cartItems.map(item => ({
             user_id: req.user.id,
             product_id: item.product_id._id,
@@ -25,11 +24,12 @@ router.post('/place', auth, async (req, res) => {
         await Cart.deleteMany({ user_id: req.user.id });
         res.json({ message: 'Order placed successfully!' });
     } catch (err) {
+        console.error(err);
         res.status(500).json({ error: 'Server error.' });
     }
 });
 
-// GET /api/orders/history — user order history
+// GET /api/orders/history
 router.get('/history', auth, async (req, res) => {
     try {
         const orders = await Order.find({ user_id: req.user.id })
@@ -37,10 +37,13 @@ router.get('/history', auth, async (req, res) => {
             .sort({ created_at: -1 })
             .limit(50);
         res.json(orders);
-    } catch { res.status(500).json({ error: 'Server error.' }); }
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Server error.' });
+    }
 });
 
-// GET /api/orders/receipt — last 10 orders as JSON for receipt page
+// GET /api/orders/receipt
 router.get('/receipt', auth, async (req, res) => {
     try {
         const user = await User.findById(req.user.id).select('name email');
@@ -49,10 +52,13 @@ router.get('/receipt', auth, async (req, res) => {
             .sort({ created_at: -1 })
             .limit(10);
         res.json({ user, orders });
-    } catch { res.status(500).json({ error: 'Server error.' }); }
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Server error.' });
+    }
 });
 
-// GET /api/orders/receipt/pdf — download PDF receipt (replaces generate_pdf.php + fpdf)
+// GET /api/orders/receipt/pdf
 router.get('/receipt/pdf', auth, async (req, res) => {
     try {
         const user = await User.findById(req.user.id).select('name email');
@@ -61,12 +67,13 @@ router.get('/receipt/pdf', auth, async (req, res) => {
             .sort({ created_at: -1 })
             .limit(10);
 
+        if (!orders.length) return res.status(404).json({ error: 'No orders found.' });
+
         const doc = new PDFDocument({ margin: 50 });
         res.setHeader('Content-Type', 'application/pdf');
         res.setHeader('Content-Disposition', 'attachment; filename=Receipt.pdf');
         doc.pipe(res);
 
-        // Header
         doc.fontSize(20).font('Helvetica-Bold').text('Order Receipt', { align: 'center' });
         doc.moveDown();
         doc.fontSize(12).font('Helvetica');
@@ -74,7 +81,6 @@ router.get('/receipt/pdf', auth, async (req, res) => {
         doc.text(`Email: ${user.email}`);
         doc.moveDown();
 
-        // Table header
         const startX = 50;
         let y = doc.y;
         doc.font('Helvetica-Bold');
@@ -108,6 +114,7 @@ router.get('/receipt/pdf', auth, async (req, res) => {
         doc.text(`Total: ${total} tk`, { align: 'right' });
         doc.end();
     } catch (err) {
+        console.error(err);
         res.status(500).json({ error: 'Server error.' });
     }
 });

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Manage Products</title>
-    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../web/css/style.css">
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -19,7 +19,6 @@
             color: #0b4646;
         }
 
-        /* Edit Modal */
         #edit-modal {
             display: none;
             position: fixed;
@@ -136,29 +135,24 @@
     <nav class="admin-nav">
         <a href="admin_dashboard.html">Dashboard</a>
         <a href="admin_add_product.html">Add Product</a>
-        <a href="../products.html?admin=true" target="_blank">View Site</a>
+        <a href="../web/products.html?admin=true" target="_blank">View Site</a>
         <a href="#" onclick="adminLogout()">Logout</a>
     </nav>
 
     <h1>Manage Products</h1>
     <div id="flash-msg"></div>
-
     <div class="products-container" id="products-container">
         <p style="text-align:center;">Loading...</p>
     </div>
 
-    <!-- Edit Modal -->
     <div id="edit-modal">
         <div class="modal-box">
             <h2>Edit Product</h2>
             <input type="hidden" id="edit-id">
-
             <label>Product Name</label>
             <input type="text" id="edit-name" placeholder="Product Name">
-
             <label>Price (Tk)</label>
             <input type="number" id="edit-price" placeholder="Price" step="0.01">
-
             <label>Category</label>
             <select id="edit-category">
                 <option value="jewelry">Jewelry</option>
@@ -167,14 +161,11 @@
                 <option value="bags">Bags</option>
                 <option value="other">Other</option>
             </select>
-
             <label>Current Image</label>
             <img id="edit-img-preview" src="" alt="Current Image">
-
             <label>Change Image (optional)</label>
             <input type="file" id="edit-image" accept="image/*">
             <small>Leave empty to keep existing image</small>
-
             <div class="modal-actions">
                 <button class="btn-save" onclick="saveEdit()">Update Product</button>
                 <button class="btn-cancel" onclick="closeModal()">Cancel</button>
@@ -182,9 +173,9 @@
         </div>
     </div>
 
-    <script src="../js/config.js"></script>
+    <script src="../web/js/config.js"></script>
     <script>
-        const adminToken = localStorage.getItem('admin_token');
+        var adminToken = localStorage.getItem('admin_token');
         if (!adminToken) window.location.href = 'admin_login.html';
 
         function adminLogout() {
@@ -206,12 +197,10 @@
                 });
                 var products = await res.json();
                 var container = document.getElementById('products-container');
-
                 if (!products.length) {
                     container.innerHTML = '<p style="text-align:center;">No products found. Add some!</p>';
                     return;
                 }
-
                 container.innerHTML = products.map(function (p) {
                     return '<div class="product-card">' +
                         '<img src="' + p.image + '" alt="' + p.name + '">' +
@@ -220,12 +209,11 @@
                         '<div class="actions">' +
                         '<a class="edit-btn" style="cursor:pointer;" onclick=\'openEdit(' + JSON.stringify(p) + ')\'>Edit</a>' +
                         '<a class="delete-btn" style="cursor:pointer;" onclick="deleteProduct(\'' + p._id + '\',\'' + p.name + '\')">Delete</a>' +
-                        '</div>' +
-                        '</div>';
+                        '</div></div>';
                 }).join('');
             } catch (err) {
                 document.getElementById('products-container').innerHTML =
-                    '<p style="text-align:center; color:red;">Error loading products. Check if backend is running.</p>';
+                    '<p style="text-align:center;color:red;">Error loading products. Check backend.</p>';
             }
         }
 
@@ -239,9 +227,7 @@
             document.getElementById('edit-modal').style.display = 'flex';
         }
 
-        function closeModal() {
-            document.getElementById('edit-modal').style.display = 'none';
-        }
+        function closeModal() { document.getElementById('edit-modal').style.display = 'none'; }
 
         async function saveEdit() {
             var id = document.getElementById('edit-id').value;
@@ -249,10 +235,8 @@
             formData.append('name', document.getElementById('edit-name').value);
             formData.append('price', document.getElementById('edit-price').value);
             formData.append('category', document.getElementById('edit-category').value);
-
             var imgFile = document.getElementById('edit-image').files[0];
             if (imgFile) formData.append('image', imgFile);
-
             try {
                 var res = await fetch(API_BASE + '/admin/products/' + id, {
                     method: 'PUT',
@@ -260,38 +244,22 @@
                     body: formData
                 });
                 var data = await res.json();
-
-                if (res.ok) {
-                    showMsg('Product updated successfully!', 'success');
-                    closeModal();
-                    loadProducts();
-                } else {
-                    showMsg(data.error || 'Update failed.', 'error');
-                }
-            } catch (err) {
-                showMsg('Server error.', 'error');
-            }
+                if (res.ok) { showMsg('Product updated successfully!', 'success'); closeModal(); loadProducts(); }
+                else { showMsg(data.error || 'Update failed.', 'error'); }
+            } catch (err) { showMsg('Server error.', 'error'); }
         }
 
         async function deleteProduct(id, name) {
             if (!confirm('Delete "' + name + '"? This cannot be undone.')) return;
-
             try {
                 var res = await fetch(API_BASE + '/admin/products/' + id, {
                     method: 'DELETE',
                     headers: { 'Authorization': 'Bearer ' + adminToken }
                 });
                 var data = await res.json();
-
-                if (res.ok) {
-                    showMsg('Product deleted successfully!', 'success');
-                    loadProducts();
-                } else {
-                    showMsg(data.error || 'Delete failed.', 'error');
-                }
-            } catch (err) {
-                showMsg('Server error.', 'error');
-            }
+                if (res.ok) { showMsg('Product deleted!', 'success'); loadProducts(); }
+                else { showMsg(data.error || 'Delete failed.', 'error'); }
+            } catch (err) { showMsg('Server error.', 'error'); }
         }
 
         loadProducts();

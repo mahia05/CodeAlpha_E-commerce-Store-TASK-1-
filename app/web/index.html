@@ -80,12 +80,12 @@
         <a href="cart.html">Cart</a>
         <a href="signup.html">Sign Up</a>
         <a href="login.html">Login</a>
-        <a href="Admin/admin_login.html" class="admin-login-button">Admin Login</a>
+        <!-- app/ is root on Vercel, so Admin/ is at same level as web/ -->
+        <a href="../Admin/admin_login.html" class="admin-login-button">Admin Login</a>
     </nav>
 
     <div id="flash-msg"></div>
 
-    <!-- Banner: image placed in HTML so it always renders -->
     <div class="banner">
         <img class="banner-bg" src="images/banner.jpg" alt="Banner">
         <div class="banner-overlay"></div>
