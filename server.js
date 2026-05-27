@@ -18,11 +18,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 
-app.use('/api/auth', require('./web/js/Routes/authRoutes'));
-app.use('/api/admin', require('./web/js/Routes/adminRoutes'));
-app.use('/api/products', require('./web/js/Routes/productsRoutes'));
-app.use('/api/cart', require('./web/js/Routes/cartRoutes'));
-app.use('/api/orders', require('./web/js/Routes/ordersRoutes'));
+app.use('/api/auth', require('./app/web/js/Routes/authRoutes'));
+app.use('/api/admin', require('./app/web/js/Routes/adminRoutes'));
+app.use('/api/products', require('./app/web/js/Routes/productsRoutes'));
+app.use('/api/cart', require('./app/web/js/Routes/cartRoutes'));
+app.use('/api/orders', require('./app/web/js/Routes/ordersRoutes'));
 
 app.get('/', (req, res) => {
     res.json({ status: 'Handmade Marketplace API is running', time: new Date() });
