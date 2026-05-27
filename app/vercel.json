@@ -1,8 +1,43 @@
 {
-    "rewrites": [
+    "version": 2,
+    "builds": [
         {
-            "source": "/(.*)",
-            "destination": "/$1"
+            "src": "server.js",
+            "use": "@vercel/node"
+        },
+        {
+            "src": "web/**",
+            "use": "@vercel/static"
+        }
+    ],
+    "routes": [
+        {
+            "src": "/api/auth/(.*)",
+            "dest": "server.js"
+        },
+        {
+            "src": "/api/admin/(.*)",
+            "dest": "server.js"
+        },
+        {
+            "src": "/api/products/(.*)",
+            "dest": "server.js"
+        },
+        {
+            "src": "/api/cart/(.*)",
+            "dest": "server.js"
+        },
+        {
+            "src": "/api/orders/(.*)",
+            "dest": "server.js"
+        },
+        {
+            "src": "/",
+            "dest": "server.js"
+        },
+        {
+            "src": "/(.*)",
+            "dest": "/web/$1"
         }
     ]
 }
