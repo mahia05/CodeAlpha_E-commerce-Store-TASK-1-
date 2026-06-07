@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Cart = require('../../../database/models/Cart');
 const Product = require('../../../database/models/Product');
-const auth = require('../../../app/Middleware/auth');
+const auth = require('../Middleware/auth');
 
 router.get('/', auth, async (req, res) => {
     try {

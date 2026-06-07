@@ -3,7 +3,7 @@ const router = express.Router();
 const Order = require('../../../database/models/Order');
 const Cart = require('../../../database/models/Cart');
 const User = require('../../../database/models/User');
-const auth = require('../../../app/Middleware/auth');
+const auth = require('../Middleware/auth');
 const PDFDocument = require('pdfkit');
 
 router.post('/place', auth, async (req, res) => {
