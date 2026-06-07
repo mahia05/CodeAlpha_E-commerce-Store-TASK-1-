@@ -37,7 +37,7 @@ router.post('/login', async (req, res) => {
     }
 });
 
-router.get('/check', require('../../../Middleware/auth'), (req, res) => {
+router.get('/check', require('../../../app/Middleware/auth'), (req, res) => {
     res.json({ loggedIn: true, user: req.user });
 });
 
