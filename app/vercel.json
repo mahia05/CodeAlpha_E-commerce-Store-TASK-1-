@@ -2,42 +2,22 @@
     "version": 2,
     "builds": [
         {
-            "src": "server.js",
-            "use": "@vercel/node"
+            "src": "app/web/**",
+            "use": "@vercel/static"
         },
         {
-            "src": "web/**",
+            "src": "app/Admin/**",
             "use": "@vercel/static"
         }
     ],
     "routes": [
         {
-            "src": "/api/auth/(.*)",
-            "dest": "server.js"
-        },
-        {
-            "src": "/api/admin/(.*)",
-            "dest": "server.js"
-        },
-        {
-            "src": "/api/products/(.*)",
-            "dest": "server.js"
-        },
-        {
-            "src": "/api/cart/(.*)",
-            "dest": "server.js"
-        },
-        {
-            "src": "/api/orders/(.*)",
-            "dest": "server.js"
-        },
-        {
-            "src": "/",
-            "dest": "server.js"
+            "src": "/Admin/(.*)",
+            "dest": "/app/Admin/$1"
         },
         {
             "src": "/(.*)",
-            "dest": "/web/$1"
+            "dest": "/app/web/$1"
         }
     ]
 }
