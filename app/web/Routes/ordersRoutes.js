@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const Order = require('../../../models/Order');
-const Cart = require('../../../models/Cart');
-const User = require('../../../models/User');
-const auth = require('../../../Middleware/auth');
+const Order = require('../../../database/models/Order');
+const Cart = require('../../../database/models/Cart');
+const User = require('../../../database/models/User');
+const auth = require('../../../app/Middleware/auth');
 const PDFDocument = require('pdfkit');
 
 router.post('/place', auth, async (req, res) => {

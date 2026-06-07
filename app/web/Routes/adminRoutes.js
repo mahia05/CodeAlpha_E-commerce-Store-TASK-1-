@@ -2,8 +2,8 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const adminAuth = require('../../../Middleware/adminAuth');
-const Product = require('../../../models/Product');
+const adminAuth = require('../../../app/Middleware/adminAuth');
+const Product = require('../../../database/models/Product');
 const { upload, cloudinary } = require('../../../cloudinary');
 
 router.post('/login', async (req, res) => {
