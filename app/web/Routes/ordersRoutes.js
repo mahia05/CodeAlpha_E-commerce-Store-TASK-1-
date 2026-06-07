@@ -1,12 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const Order = require('../models/Order');
-const Cart = require('../models/Cart');
-const User = require('../models/User');
-const auth = require('../Middleware/auth');
+const Order = require('../../../models/Order');
+const Cart = require('../../../models/Cart');
+const User = require('../../../models/User');
+const auth = require('../../../Middleware/auth');
 const PDFDocument = require('pdfkit');
 
-// POST /api/orders/place
 router.post('/place', auth, async (req, res) => {
     const { fullname, address, payment_method } = req.body;
     try {
@@ -29,7 +28,6 @@ router.post('/place', auth, async (req, res) => {
     }
 });
 
-// GET /api/orders/history
 router.get('/history', auth, async (req, res) => {
     try {
         const orders = await Order.find({ user_id: req.user.id })
@@ -43,7 +41,6 @@ router.get('/history', auth, async (req, res) => {
     }
 });
 
-// GET /api/orders/receipt
 router.get('/receipt', auth, async (req, res) => {
     try {
         const user = await User.findById(req.user.id).select('name email');
@@ -58,7 +55,6 @@ router.get('/receipt', auth, async (req, res) => {
     }
 });
 
-// GET /api/orders/receipt/pdf
 router.get('/receipt/pdf', auth, async (req, res) => {
     try {
         const user = await User.findById(req.user.id).select('name email');
@@ -66,21 +62,17 @@ router.get('/receipt/pdf', auth, async (req, res) => {
             .populate('product_id')
             .sort({ created_at: -1 })
             .limit(10);
-
         if (!orders.length) return res.status(404).json({ error: 'No orders found.' });
-
         const doc = new PDFDocument({ margin: 50 });
         res.setHeader('Content-Type', 'application/pdf');
         res.setHeader('Content-Disposition', 'attachment; filename=Receipt.pdf');
         doc.pipe(res);
-
         doc.fontSize(20).font('Helvetica-Bold').text('Order Receipt', { align: 'center' });
         doc.moveDown();
         doc.fontSize(12).font('Helvetica');
         doc.text(`Name: ${orders[0]?.fullname || user.name}`);
         doc.text(`Email: ${user.email}`);
         doc.moveDown();
-
         const startX = 50;
         let y = doc.y;
         doc.font('Helvetica-Bold');
@@ -92,7 +84,6 @@ router.get('/receipt/pdf', auth, async (req, res) => {
         doc.moveDown(0.5);
         doc.moveTo(startX, doc.y).lineTo(550, doc.y).stroke();
         doc.moveDown(0.3);
-
         let total = 0;
         doc.font('Helvetica');
         orders.forEach(order => {
@@ -107,7 +98,6 @@ router.get('/receipt/pdf', auth, async (req, res) => {
             doc.text(new Date(order.created_at).toLocaleDateString(), startX + 400, y, { width: 100 });
             doc.moveDown(0.5);
         });
-
         doc.moveTo(startX, doc.y).lineTo(550, doc.y).stroke();
         doc.moveDown(0.3);
         doc.font('Helvetica-Bold');

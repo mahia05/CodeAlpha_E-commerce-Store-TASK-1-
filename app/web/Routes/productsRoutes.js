@@ -1,8 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const Product = require('../models/Product');
+const Product = require('../../../models/Product');
 
-// GET /api/products
 router.get('/', async (req, res) => {
     try {
         const filter = req.query.category ? { category: req.query.category } : {};
@@ -11,7 +10,6 @@ router.get('/', async (req, res) => {
     } catch { res.status(500).json({ error: 'Server error.' }); }
 });
 
-// GET /api/products/:id
 router.get('/:id', async (req, res) => {
     try {
         const product = await Product.findById(req.params.id);

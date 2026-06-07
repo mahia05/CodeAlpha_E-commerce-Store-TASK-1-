@@ -2,9 +2,8 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const User = require('../models/User');
+const User = require('../../../models/User');
 
-// POST /api/auth/signup
 router.post('/signup', async (req, res) => {
     const { name, email, password } = req.body;
     if (!name || !email || !password)
@@ -20,7 +19,6 @@ router.post('/signup', async (req, res) => {
     }
 });
 
-// POST /api/auth/login
 router.post('/login', async (req, res) => {
     const { email, password } = req.body;
     try {
@@ -39,8 +37,7 @@ router.post('/login', async (req, res) => {
     }
 });
 
-// POST /api/auth/check — verify token validity
-router.get('/check', require('../Middleware/auth'), (req, res) => {
+router.get('/check', require('../../../Middleware/auth'), (req, res) => {
     res.json({ loggedIn: true, user: req.user });
 });
 
